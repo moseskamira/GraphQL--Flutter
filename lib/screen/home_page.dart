@@ -26,7 +26,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(title: const Text("Users")),
       body: Query(
-        options: QueryOptions(document: gql(users)),
+        options: QueryOptions(document: gql(document)),
         builder: (QueryResult result, {fetchMore, refetch}) {
           if (result.isLoading) {
             return const Center(child: CircularProgressIndicator());
@@ -43,22 +43,37 @@ class _HomePageState extends State<HomePage> {
               ),
             );
           }
-          final List<User> users = _returnUsers(result);
-          if (users.isEmpty) {
-            return const Center(child: Text("No users found."));
-          }
+
           return RefreshIndicator(
             onRefresh: () async => refetch?.call(),
-            child: ListView.builder(
-              itemCount: users.length,
-              itemBuilder: (context, index) {
-                final user = users[index];
-                return ListTile(
-                  leading: CircleAvatar(child: Text(user.name?[0] ?? "?")),
-                  title: Text(user.name ?? "Unknown"),
-                  subtitle: Text("ID: ${user.id ?? "N/A"}"),
+            child: ListView.separated(
+              itemBuilder: (context, continentIndex) {
+                return ExpansionTile(
+                  title:
+                      Text(result.data!["continents"][continentIndex]["name"]),
+                  children: [
+                    ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: result
+                          .data!["continents"][continentIndex]["countries"]
+                          .length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return ListTile(
+                          title: Text(
+                            result.data!["continents"][continentIndex]
+                                ["countries"][index]["name"],
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 );
               },
+              separatorBuilder: (context, index) {
+                return const Divider();
+              },
+              itemCount: result.data!["continents"].length,
             ),
           );
         },
