@@ -47,6 +47,7 @@ class _HomePageState extends State<HomePage> {
           if (users.isEmpty) {
             return const Center(child: Text("No users found."));
           }
+          users.sort((a, b) => a.name!.compareTo(b.name!));
           return RefreshIndicator(
             onRefresh: () async => refetch?.call(),
             child: ListView.builder(

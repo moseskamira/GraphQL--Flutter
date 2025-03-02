@@ -40,3 +40,12 @@ const String posts = """
   }
 }
 """;
+const String updateName = """
+mutation UpdateUserName(\$id: ID!, \$newName: String!) {
+  updateUser(id: \$id, name: \$newName) {
+    id
+    name
+    email
+  }
+}
+""";
