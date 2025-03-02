@@ -11,32 +11,63 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List<User> _returnUsers(QueryResult result) {
+    final dynamicList = result.data?["users"]?["data"];
+    if (dynamicList is List) {
+      return dynamicList
+          .map((item) => User.fromJson(item as Map<String, dynamic>))
+          .toList();
+    }
+    return [];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(title: const Text("Users")),
       body: Query(
         options: QueryOptions(document: gql(users)),
         builder: (QueryResult result, {fetchMore, refetch}) {
-          List<User> users = [];
           if (result.isLoading) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
           if (result.hasException) {
-            return Center(child: Text("Error loading products"));
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  "Error loading users: ${result.exception.toString()}",
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
+            );
           }
-          dynamic dynamicList = result.data!["users"]["data"];
-          if (dynamicList is List) {
-            users = dynamicList
-                .map((item) => User.fromJson(item as Map<String, dynamic>))
-                .toList();
-          } else {
-            print("No could be found.");
+          final List<User> users = _returnUsers(result);
+          if (users.isEmpty) {
+            return const Center(child: Text("No users found."));
           }
-          return Column(
-            children: users.map((user) => Text('${user.name}')).toList(),
+          return RefreshIndicator(
+            onRefresh: () async => refetch?.call(),
+            child: ListView.builder(
+              itemCount: users.length,
+              itemBuilder: (context, index) {
+                final user = users[index];
+                return ListTile(
+                  leading: CircleAvatar(child: Text(user.name?[0] ?? "?")),
+                  title: Text(user.name ?? "Unknown"),
+                  subtitle: Text("ID: ${user.id ?? "N/A"}"),
+                );
+              },
+            ),
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => setState(
+          () {},
+        ), // Trigger a rebuild
+        child: const Icon(Icons.add),
       ),
     );
   }
