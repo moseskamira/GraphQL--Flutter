@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:graph_ql/service/graphql_config.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
+import 'core/service/graphql_config.dart';
 import 'my_app.dart';
 
 void main() async {
