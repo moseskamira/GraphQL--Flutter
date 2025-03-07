@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:graph_ql/model/user.dart';
-import 'package:graph_ql/query/graphql_query.dart';
+import 'package:graph_ql/model/post.dart';
+import 'package:graph_ql/screen/post_details_page.dart';
+import 'package:graph_ql/service/graphql_service.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 class HomePage extends StatefulWidget {
@@ -11,70 +12,49 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<User> _returnUsers(QueryResult result) {
-    final dynamicList = result.data?["users"]?["data"];
-    if (dynamicList is List) {
-      return dynamicList
-          .map((item) => User.fromJson(item as Map<String, dynamic>))
-          .toList();
-    }
-    return [];
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Users")),
-      body: Query(
-        options: QueryOptions(document: gql(document)),
-        builder: (QueryResult result, {fetchMore, refetch}) {
-          if (result.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+      appBar: AppBar(
+        title: const Text("MY Posts"),
+        centerTitle: true,
+      ),
+      body: FutureBuilder(
+        future: GraphQLService(client: GraphQLProvider.of(context).value)
+            .fetchPosts(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
           }
-          if (result.hasException) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  "Error loading users: ${result.exception.toString()}",
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.red),
+          if (snapshot.hasError) return Text(snapshot.error.toString());
+          if (!snapshot.hasData) {
+            return Text('No Data Found');
+          }
+          final List<Post> posts = snapshot.data!;
+          return ListView.separated(
+            itemCount: posts.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (context) {
+                    return PostDetailsPage(
+                      postId: '${posts[index].id}',
+                    );
+                  }));
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 8.0,
+                    horizontal: 16.0,
+                  ),
+                  child: Text('${posts[index].title}'),
                 ),
-              ),
-            );
-          }
-
-          return RefreshIndicator(
-            onRefresh: () async => refetch?.call(),
-            child: ListView.separated(
-              itemBuilder: (context, continentIndex) {
-                return ExpansionTile(
-                  title:
-                      Text(result.data!["continents"][continentIndex]["name"]),
-                  children: [
-                    ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: result
-                          .data!["continents"][continentIndex]["countries"]
-                          .length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return ListTile(
-                          title: Text(
-                            result.data!["continents"][continentIndex]
-                                ["countries"][index]["name"],
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                );
-              },
-              separatorBuilder: (context, index) {
-                return const Divider();
-              },
-              itemCount: result.data!["continents"].length,
-            ),
+              );
+            },
+            separatorBuilder: (context, index) {
+              return const Divider();
+            },
           );
         },
       ),
