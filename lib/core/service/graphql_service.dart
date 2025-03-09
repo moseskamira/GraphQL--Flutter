@@ -1,6 +1,6 @@
-import 'package:graph_ql/model/post.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
+import '../model/post.dart';
 import '../query/graphql_query.dart';
 
 class GraphQLService {
@@ -19,7 +19,6 @@ class GraphQLService {
     }
     final List<dynamic> dynamicList = result.data?['posts']['data'] ?? [];
     final listData = dynamicList.map((post) => Post.fromJson(post)).toList();
-
     return listData;
   }
 
@@ -34,6 +33,27 @@ class GraphQLService {
       throw Exception(result.exception.toString());
     }
     dynamic jsonData = result.data!['post'];
+    return Post.fromJson(jsonData);
+  }
+
+  Future<Post> updateFetchedPost(Post updateRequest) async {
+    final QueryOptions options = QueryOptions(
+      document: gql(updatePost),
+      variables: {
+        'input': {
+          'title': updateRequest.title,
+          'body': updateRequest.body,
+        },
+        'pId': updateRequest.id,
+      },
+      fetchPolicy: FetchPolicy.cacheFirst,
+    );
+    final QueryResult result = await client.query(options);
+    if (result.hasException) {
+      throw Exception(result.exception.toString());
+    }
+    dynamic jsonData = result.data!['updatePost'];
+    print('RESULTUPDATE: ${result.data}');
     return Post.fromJson(jsonData);
   }
 }

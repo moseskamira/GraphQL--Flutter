@@ -1,16 +1,65 @@
-# graph_ql
+# Flutter & Dart Posts app with GraphQL
 
-A new Flutter project.
+## Technology
 
-## Getting Started
+- **Flutter/ Dart :**
+    - GraphQL
+    - MaterialPageRoute
+  
+## Features
 
-This project is a starting point for a Flutter application.
+- **Posts :**
+    - Fetch Posts
+    - Fetch Post by Id
+    - Update Post
+  
+- **Theming :**
+- Light
 
-A few resources to get you started if this is your first Flutter project:
+## File structure
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+    ├── lib
+    │   ├── core
+    │   │  ├── models
+    │   │  ├── services
+    │   │  ├── view_models // All the interactions with the database/ Providers
+    │   │── ui
+    │   │  ├── constants
+    │   │  ├── routes
+    │   │  ├── screens
+    │   │  ├── utils
+    │   │  ├── widgets
+    │   ├── main.dart
+        ├── my_app.dart
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Run Locally
+
+Clone the project
+
+```bash
+  git clone https://github.com/moseskamira/GraphQL--Flutter.git
+```
+
+Go to the project directory
+
+```bash
+  cd graph_ql
+```
+
+Install dependencies
+
+```bash
+  flutter pub get
+```
+
+Connect a physical device or start a virtual device on your machine
+
+```bash
+  flutter run
+```
+
+## How to tweak this project for your uses
+
+- **Setup Firebase:** Insert some data for testing..
+
+

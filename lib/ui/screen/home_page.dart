@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:graph_ql/model/post.dart';
-import 'package:graph_ql/screen/post_details_page.dart';
-import 'package:graph_ql/service/graphql_service.dart';
+import 'package:graph_ql/ui/routes/routes_names.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+
+import '../../core/model/post.dart';
+import '../../core/service/graphql_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -36,12 +37,10 @@ class _HomePageState extends State<HomePage> {
             itemBuilder: (context, index) {
               return GestureDetector(
                 onTap: () {
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (context) {
-                    return PostDetailsPage(
-                      postId: '${posts[index].id}',
-                    );
-                  }));
+                  Navigator.of(context).pushNamed(
+                    arguments: {'postId': '${posts[index].id}'},
+                    RoutesNames.postDetails,
+                  );
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
