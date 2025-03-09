@@ -32,6 +32,8 @@ class CustomTextFormField extends StatelessWidget {
       ),
       validator: validator,
       onSaved: onSaved,
+      maxLines: null,
+      minLines: 1,
     );
   }
 }
