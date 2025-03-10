@@ -6,6 +6,6 @@ import 'my_app.dart';
 
 void main() async {
   await initHiveForFlutter();
-  final client = GraphQLConfig.client();
-  runApp(MyApp(client: client));
+  final client = GraphQLConfig.valueNotifierClient();
+  runApp(MyApp(valueNotifierClient: client));
 }

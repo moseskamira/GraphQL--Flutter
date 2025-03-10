@@ -36,7 +36,7 @@ class GraphQLService {
     return Post.fromJson(jsonData);
   }
 
-  Future<Post> updateFetchedPost(Post updateRequest) async {
+  Future<dynamic> updateFetchedPost(Post updateRequest) async {
     final QueryOptions options = QueryOptions(
       document: gql(updatePost),
       variables: {
@@ -52,8 +52,20 @@ class GraphQLService {
     if (result.hasException) {
       throw Exception(result.exception.toString());
     }
-    dynamic jsonData = result.data!['updatePost'];
-    print('RESULTUPDATE: ${result.data}');
-    return Post.fromJson(jsonData);
+
+    return result.data!['updatePost'];
+  }
+
+  Future<bool> deleteSelectedPost(String pID) async {
+    final QueryOptions options = QueryOptions(
+      document: gql(deletePost),
+      variables: {'postId': pID},
+      fetchPolicy: FetchPolicy.cacheFirst,
+    );
+    final result = await client.query(options);
+    if (result.hasException) {
+      return false;
+    }
+    return result.data?['deletePost'] == true;
   }
 }

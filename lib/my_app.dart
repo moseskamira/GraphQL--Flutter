@@ -5,13 +5,14 @@ import 'package:graph_ql/ui/screen/home_page.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 class MyApp extends StatelessWidget {
-  final ValueNotifier<GraphQLClient> client;
-  const MyApp({super.key, required this.client});
+  final ValueNotifier<GraphQLClient> valueNotifierClient;
+
+  const MyApp({super.key, required this.valueNotifierClient});
 
   @override
   Widget build(BuildContext context) {
     return GraphQLProvider(
-      client: client,
+      client: valueNotifierClient,
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         initialRoute: RoutesNames.homePage,
