@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:graph_ql/core/model/post.dart';
 import 'package:graph_ql/ui/routes/routes_names.dart';
 import 'package:graph_ql/ui/screen/home_page.dart';
 import 'package:graph_ql/ui/screen/post_details_page.dart';
+import 'package:graph_ql/ui/screen/update_post_page.dart';
 
 class Routes {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -13,6 +15,15 @@ class Routes {
         String postId = args['postId'] as String;
         return MaterialPageRoute(
           builder: (BuildContext ctx) => PostDetailsPage(postId: postId),
+        );
+
+      case RoutesNames.updatePost:
+        Map<String, dynamic> args = settings.arguments as Map<String, dynamic>;
+        Post post = args['post'] as Post;
+        return MaterialPageRoute(
+          builder: (BuildContext ctx) => UpdatePostPage(
+            post: post,
+          ),
         );
       default:
         return MaterialPageRoute(builder: (_) {

@@ -14,7 +14,7 @@
     - Update Post
   
 - **Theming :**
-- Light
+    - Light
 
 ## File structure
 

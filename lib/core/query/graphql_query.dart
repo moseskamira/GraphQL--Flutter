@@ -28,3 +28,9 @@ const String updatePost = """
           }
         }
       """;
+
+const String deletePost = """
+      mutation DeletePost(\$postId: ID!) {
+         deletePost(id: \$postId)
+         }
+""";
