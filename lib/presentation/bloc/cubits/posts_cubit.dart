@@ -57,4 +57,21 @@ class PostsCubit extends Cubit<PostsCubitStates> {
       emit(PostUpdateError(response.error));
     }
   }
+
+  Future<void> deletePost(String postId) async {
+    emit(PostDeleteLoading());
+    final response = await repository.deleteSelectedPost(postId);
+    if (response.success) {
+      final QueryResult queryResult = response.data;
+      final queryResultData = queryResult.data;
+      bool isDeleted = queryResultData?['deletePost'] == true;
+      if (isDeleted) {
+        emit(PostDeleteSuccess('Post has been deleted successfully'));
+      } else {
+        emit(PostDeleteError('Something went wrong'));
+      }
+    } else {
+      emit(PostDeleteError(response.error));
+    }
+  }
 }

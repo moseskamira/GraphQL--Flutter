@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graph_ql/presentation/bloc/cubits/posts_cubit.dart';
 import 'package:graph_ql/presentation/bloc/cubits/posts_cubit_states.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
 
 import '../../data/models/post.dart';
-import '../../data/network/service/graphql_service.dart';
 import '../widgets/custom_text_form_field.dart';
 
 class UpdatePostPage extends StatefulWidget {
@@ -29,28 +27,7 @@ class _UpdatePostPageState extends State<UpdatePostPage> {
 
   Future<void> _deletePost() async {
     if (postToUpdate.id == null) return;
-    try {
-      bool response = await GraphQLService(
-        client: GraphQLProvider.of(context).value,
-      ).deleteSelectedPost(postToUpdate.id!);
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(response
-              ? "Post deleted successfully!"
-              : "Failed to delete post."),
-          backgroundColor: response ? Colors.blue : Colors.red,
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Error: ${e.toString()}"),
-          backgroundColor: Colors.red,
-        ),
-      );
-    } finally {}
+    context.read<PostsCubit>().deletePost(postToUpdate.id!);
   }
 
   Future<void> _updatePost() async {
@@ -91,10 +68,12 @@ class _UpdatePostPageState extends State<UpdatePostPage> {
             child: BlocConsumer<PostsCubit, PostsCubitStates>(
               listener: (BuildContext context, PostsCubitStates state) {
                 if (state is PostUpdateSuccess) {}
-                if (state is PostUpdateError) {
+                if (state is PostDeleteSuccess) {}
+                if (state is PostUpdateError || state is PostDeleteError) {
+                  final message = (state as dynamic).errorMessage;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text("Error: ${state.errorMessage}"),
+                      content: Text("Error: $message"),
                       backgroundColor: Colors.red,
                     ),
                   );
@@ -124,7 +103,7 @@ class _UpdatePostPageState extends State<UpdatePostPage> {
                       onSaved: (value) => postToUpdate.body = value?.trim(),
                     ),
                     const SizedBox(height: 20),
-                    state is PostUpdateLoading
+                    state is PostUpdateLoading || state is PostDeleteLoading
                         ? const SizedBox(
                             height: 20,
                             width: 20,
