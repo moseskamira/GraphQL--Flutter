@@ -10,6 +10,8 @@ class PostsInitial extends PostsCubitStates {}
 
 class PostsLoading extends PostsCubitStates {}
 
+class PostDeleteLoading extends PostsCubitStates {}
+
 class PostUpdateLoading extends PostsCubitStates {}
 
 class PostDetailLoading extends PostsCubitStates {}
@@ -41,6 +43,15 @@ class PostUpdateSuccess extends PostsCubitStates {
   List<Object?> get props => [post];
 }
 
+class PostDeleteSuccess extends PostsCubitStates {
+  final String? message;
+
+  PostDeleteSuccess(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
 class PostDetailError extends PostsCubitStates {
   final String? errorMessage;
 
@@ -54,6 +65,15 @@ class PostUpdateError extends PostsCubitStates {
   final String? errorMessage;
 
   PostUpdateError(this.errorMessage);
+
+  @override
+  List<Object?> get props => [errorMessage];
+}
+
+class PostDeleteError extends PostsCubitStates {
+  final String? errorMessage;
+
+  PostDeleteError(this.errorMessage);
 
   @override
   List<Object?> get props => [errorMessage];

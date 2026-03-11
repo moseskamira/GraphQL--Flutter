@@ -55,4 +55,18 @@ class PostRepository {
       return NetworkResponse(false, error: e.toString());
     }
   }
+
+  Future<NetworkResponse> deleteSelectedPost(String pID) async {
+    try {
+      final QueryOptions options = QueryOptions(
+        document: gql(deletePost),
+        variables: {'postId': pID},
+        fetchPolicy: FetchPolicy.cacheFirst,
+      );
+      final queryResult = await client.query(options);
+      return NetworkResponse(true, data: queryResult);
+    } catch (e) {
+      return NetworkResponse(false, error: e.toString());
+    }
+  }
 }
