@@ -5,6 +5,7 @@ import 'data/network/service/graphql_config.dart';
 import 'my_app.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await initHiveForFlutter();
   final client = GraphQLConfig.valueNotifierClient();
   runApp(MyApp(valueNotifierClient: client));

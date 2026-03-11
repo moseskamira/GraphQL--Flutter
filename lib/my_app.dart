@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
         child: MultiBlocProvider(
           providers: [
             BlocProvider(
-              create: (context) =>
+              create: (ctx) =>
                   PostsCubit(PostRepository(valueNotifierClient.value)),
             )
           ],

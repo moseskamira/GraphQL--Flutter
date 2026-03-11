@@ -37,6 +37,7 @@ class _HomePageState extends State<HomePage> {
               posts = postData;
             }
           }
+          if (state is PostsError) {}
         },
         builder: (BuildContext context, state) {
           if (state is PostsLoading) {
