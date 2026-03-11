@@ -25,6 +25,15 @@ class PostsSuccess extends PostsCubitStates {
   List<Object?> get props => [posts];
 }
 
+class PostsError extends PostsCubitStates {
+  final String? message;
+
+  PostsError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
 class PostDetailSuccess extends PostsCubitStates {
   final Post? post;
 

@@ -20,6 +20,8 @@ class PostsCubit extends Cubit<PostsCubitStates> {
       List<Post> posts =
           dynamicList.map((post) => Post.fromJson(post)).toList();
       emit(PostsSuccess(posts));
+    } else {
+      emit(PostsError(response.error));
     }
   }
 

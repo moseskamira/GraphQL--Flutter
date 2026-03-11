@@ -86,9 +86,13 @@ class _UpdatePostPageState extends State<UpdatePostPage> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const Text('Fill The Form Below',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold)),
+                    const Text(
+                      'Fill The Form Below',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     const SizedBox(height: 16),
                     CustomTextFormField(
                       label: 'Title',
