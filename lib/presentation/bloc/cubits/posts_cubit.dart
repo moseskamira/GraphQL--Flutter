@@ -14,11 +14,30 @@ class PostsCubit extends Cubit<PostsCubitStates> {
     emit(PostsLoading());
     final response = await repository.fetchPosts();
     if (response.success) {
-      final QueryResult respData = response.data;
-      final List<dynamic> dynamicList = respData.data?['posts']['data'] ?? [];
+      final QueryResult queryResult = response.data;
+      final queryResultData = queryResult.data;
+      final List<dynamic> dynamicList = queryResultData?['posts']['data'] ?? [];
       List<Post> posts =
           dynamicList.map((post) => Post.fromJson(post)).toList();
       emit(PostsSuccess(posts));
+    }
+  }
+
+  Future<void> getPostsDetail(String id) async {
+    emit(PostDetailLoading());
+    final response = await repository.getPostDetail(id);
+    if (response.success) {
+      final QueryResult queryResult = response.data;
+      final queryResultData = queryResult.data;
+      if (queryResultData != null) {
+        final dynamicPost = queryResultData['post'];
+        final Post post = Post.fromJson(dynamicPost);
+        emit(PostDetailSuccess(post));
+      } else {
+        emit(PostDetailError('Something went wrong'));
+      }
+    } else {
+      emit(PostDetailError(response.error));
     }
   }
 }

@@ -10,16 +10,30 @@ class PostsInitial extends PostsCubitStates {}
 
 class PostsLoading extends PostsCubitStates {}
 
+class PostDetailLoading extends PostsCubitStates {}
+
 class PostsSuccess extends PostsCubitStates {
   final List<Post>? posts;
 
   PostsSuccess(this.posts);
+
+  @override
+  List<Object?> get props => [posts];
 }
 
-class PostsError extends PostsCubitStates {
+class PostDetailSuccess extends PostsCubitStates {
+  final Post? post;
+
+  PostDetailSuccess(this.post);
+
+  @override
+  List<Object?> get props => [post];
+}
+
+class PostDetailError extends PostsCubitStates {
   final String? errorMessage;
 
-  PostsError(this.errorMessage);
+  PostDetailError(this.errorMessage);
 
   @override
   List<Object?> get props => [errorMessage];

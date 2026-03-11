@@ -20,4 +20,18 @@ class PostRepository {
       return NetworkResponse(false, error: e.toString());
     }
   }
+
+  Future<NetworkResponse> getPostDetail(String postId) async {
+    try {
+      final QueryOptions options = QueryOptions(
+        document: gql(postDetails),
+        variables: {"pID": postId},
+        fetchPolicy: FetchPolicy.cacheFirst,
+      );
+      final QueryResult queryResult = await client.query(options);
+      return NetworkResponse(true, data: queryResult);
+    } catch (e) {
+      return NetworkResponse(false, error: e.toString());
+    }
+  }
 }
