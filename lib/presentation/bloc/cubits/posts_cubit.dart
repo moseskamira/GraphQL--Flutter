@@ -40,4 +40,21 @@ class PostsCubit extends Cubit<PostsCubitStates> {
       emit(PostDetailError(response.error));
     }
   }
+
+  Future<void> updatePost(Post post) async {
+    emit(PostUpdateLoading());
+    final response = await repository.updateFetchedPost(post);
+    if (response.success) {
+      final QueryResult queryResult = response.data;
+      final queryResultData = queryResult.data;
+      if (queryResultData != null) {
+        final updatedPost = queryResultData['updatePost'];
+        emit(PostUpdateSuccess(Post.fromJson(updatedPost)));
+      } else {
+        emit(PostUpdateError('Something went wrong'));
+      }
+    } else {
+      emit(PostUpdateError(response.error));
+    }
+  }
 }
