@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:graph_ql/core/model/post.dart';
-import 'package:graph_ql/ui/routes/routes_names.dart';
-import 'package:graph_ql/ui/screen/home_page.dart';
-import 'package:graph_ql/ui/screen/post_details_page.dart';
-import 'package:graph_ql/ui/screen/update_post_page.dart';
+import 'package:graph_ql/presentation/pages/home_page.dart';
+import 'package:graph_ql/presentation/pages/post_details_page.dart';
+import 'package:graph_ql/presentation/pages/update_post_page.dart';
+import 'package:graph_ql/route/routes_names.dart';
+
+import '../data/models/post.dart';
 
 class Routes {
   static Route<dynamic> generateRoute(RouteSettings settings) {

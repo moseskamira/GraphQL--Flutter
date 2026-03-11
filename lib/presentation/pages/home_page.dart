@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:graph_ql/ui/routes/routes_names.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../core/model/post.dart';
-import '../../core/service/graphql_service.dart';
+import '../../data/models/post.dart';
+import '../../data/network/query/graphql_query.dart' as RoutesNames;
+import '../bloc/cubits/posts_cubit.dart';
+import '../bloc/cubits/posts_cubit_states.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,6 +14,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List<Post> posts = [];
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<PostsCubit>().fetchPosts();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,18 +29,19 @@ class _HomePageState extends State<HomePage> {
         title: const Text("MY Posts"),
         centerTitle: true,
       ),
-      body: FutureBuilder(
-        future: GraphQLService(client: GraphQLProvider.of(context).value)
-            .fetchPosts(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+      body: BlocConsumer<PostsCubit, PostsCubitStates>(
+        listener: (BuildContext context, state) {
+          if (state is PostsSuccess) {
+            final postData = state.posts;
+            if (postData != null && postData.isNotEmpty) {
+              posts = postData;
+            }
+          }
+        },
+        builder: (BuildContext context, state) {
+          if (state is PostsLoading) {
             return Center(child: CircularProgressIndicator());
           }
-          if (snapshot.hasError) return Text(snapshot.error.toString());
-          if (!snapshot.hasData) {
-            return Text('No Data Found');
-          }
-          final List<Post> posts = snapshot.data!;
           return ListView.separated(
             itemCount: posts.length,
             itemBuilder: (context, index) {
