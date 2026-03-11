@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:graph_ql/presentation/bloc/cubits/posts_cubit.dart';
+import 'package:graph_ql/presentation/bloc/cubits/posts_cubit_states.dart';
+import 'package:graph_ql/route/routes_names.dart';
 
 import '../../data/models/post.dart';
-import '../../data/network/query/graphql_query.dart' as RoutesNames;
-import '../../data/network/service/graphql_service.dart';
 
 class PostDetailsPage extends StatefulWidget {
   final String postId;
@@ -15,9 +16,12 @@ class PostDetailsPage extends StatefulWidget {
 }
 
 class _PostDetailsPageState extends State<PostDetailsPage> {
+  Post? post;
+
   @override
   void initState() {
     super.initState();
+    context.read<PostsCubit>().getPostsDetail(widget.postId);
   }
 
   @override
@@ -27,20 +31,23 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
         title: const Text('Post Details'),
         centerTitle: true,
       ),
-      body: FutureBuilder(
-        future: GraphQLService(client: GraphQLProvider.of(context).value)
-            .postDetail(widget.postId),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+      body: BlocConsumer<PostsCubit, PostsCubitStates>(
+        listener: (
+          context,
+          state,
+        ) {
+          if (state is PostDetailSuccess) {
+            final stateData = state.post;
+            post = stateData;
+          }
+        },
+        builder: (
+          context,
+          state,
+        ) {
+          if (state is PostDetailLoading) {
             return Center(child: CircularProgressIndicator());
           }
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error.toString()}'));
-          }
-          if (!snapshot.hasData) {
-            return Center(child: Text('No Data Found'));
-          }
-          Post post = snapshot.data!;
           return SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -56,7 +63,7 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    '${post.title}',
+                    '${post?.title}',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           color: Colors.blueGrey[800],
                         ),
@@ -71,7 +78,7 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    '${post.body}',
+                    '${post?.body}',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: Colors.black54,
                         ),

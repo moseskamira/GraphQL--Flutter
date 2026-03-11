@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:graph_ql/route/routes_names.dart';
 
 import '../../data/models/post.dart';
-import '../../data/network/query/graphql_query.dart' as RoutesNames;
 import '../bloc/cubits/posts_cubit.dart';
 import '../bloc/cubits/posts_cubit_states.dart';
 
