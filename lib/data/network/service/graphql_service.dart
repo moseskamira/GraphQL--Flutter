@@ -1,6 +1,6 @@
 import 'package:graphql_flutter/graphql_flutter.dart';
 
-import '../model/post.dart';
+import '../../models/post.dart';
 import '../query/graphql_query.dart';
 
 class GraphQLService {

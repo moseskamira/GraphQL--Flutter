@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:graph_ql/ui/routes/routes_names.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
-import '../../core/model/post.dart';
-import '../../core/service/graphql_service.dart';
+import '../../data/models/post.dart';
+import '../../data/network/query/graphql_query.dart' as RoutesNames;
+import '../../data/network/service/graphql_service.dart';
 
 class PostDetailsPage extends StatefulWidget {
   final String postId;

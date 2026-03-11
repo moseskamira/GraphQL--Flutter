@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
-import '../../core/model/post.dart';
-import '../../core/service/graphql_service.dart';
+import '../../data/models/post.dart';
+import '../../data/network/service/graphql_service.dart';
 import '../widgets/custom_text_form_field.dart';
 
 class UpdatePostPage extends StatefulWidget {
