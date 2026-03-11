@@ -11,6 +11,7 @@ Implementing GraphQL CRUD **BLoC architecture**.
 * Update Posts
 * State management using BLoC
 * Clean and scalable project architecture
+
 ---
 
 # 🛠️ Tech Stack
@@ -137,7 +138,20 @@ Reusable widgets and global providers.
 ## API
 
 - [GraphQL Posts API](https://graphqlzero.almansi.me/api)
+
 ---
+
+## Posts:
+
+![posts.png](assets/images/posts.png)
+
+## Post Details:
+
+![posts.png](assets/images/detail.png)
+
+## Update/delete Post:
+
+![posts.png](assets/images/update.png)
 
 # 👨‍💻 Author
 
