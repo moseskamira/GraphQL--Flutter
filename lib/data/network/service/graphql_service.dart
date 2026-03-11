@@ -24,7 +24,6 @@ class GraphQLService {
     if (result.hasException) {
       throw Exception(result.exception.toString());
     }
-
     return result.data!['updatePost'];
   }
 

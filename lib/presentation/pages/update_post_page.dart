@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:graph_ql/presentation/bloc/cubits/posts_cubit.dart';
+import 'package:graph_ql/presentation/bloc/cubits/posts_cubit_states.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 import '../../data/models/post.dart';
@@ -17,7 +20,6 @@ class UpdatePostPage extends StatefulWidget {
 class _UpdatePostPageState extends State<UpdatePostPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late Post postToUpdate;
-  bool isLoading = false;
 
   @override
   void initState() {
@@ -27,7 +29,6 @@ class _UpdatePostPageState extends State<UpdatePostPage> {
 
   Future<void> _deletePost() async {
     if (postToUpdate.id == null) return;
-    setState(() => isLoading = true);
     try {
       bool response = await GraphQLService(
         client: GraphQLProvider.of(context).value,
@@ -49,46 +50,23 @@ class _UpdatePostPageState extends State<UpdatePostPage> {
           backgroundColor: Colors.red,
         ),
       );
-    } finally {
-      if (mounted) setState(() => isLoading = false);
-    }
+    } finally {}
   }
 
   Future<void> _updatePost() async {
     if (!_formKey.currentState!.validate()) return;
     _formKey.currentState!.save();
-    setState(() => isLoading = true);
-    try {
-      await GraphQLService(
-        client: GraphQLProvider.of(context).value,
-      ).updateFetchedPost(postToUpdate);
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Post updated successfully!"),
-          backgroundColor: Colors.blue,
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Error: ${e.toString()}"),
-          backgroundColor: Colors.red,
-        ),
-      );
-    } finally {
-      if (mounted) setState(() => isLoading = false);
-    }
+    context.read<PostsCubit>().updatePost(postToUpdate);
   }
 
   Widget _buildButton({
     required String text,
     required VoidCallback onPressed,
     Color? color,
+    required PostsCubitStates state,
   }) {
     return ElevatedButton(
-      onPressed: isLoading ? null : onPressed,
+      onPressed: state is PostUpdateLoading ? null : onPressed,
       style: ElevatedButton.styleFrom(
         backgroundColor: color ?? Colors.white,
         side: const BorderSide(color: Colors.blue, width: 1),
@@ -110,46 +88,65 @@ class _UpdatePostPageState extends State<UpdatePostPage> {
         child: Form(
           key: _formKey,
           child: Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Text('Fill The Form Below',
-                    style:
-                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 16),
-                CustomTextFormField(
-                  label: 'Title',
-                  initialValue: postToUpdate.title ?? '',
-                  onSaved: (value) => postToUpdate.title = value?.trim(),
-                  keyboardType: TextInputType.multiline,
-                ),
-                const SizedBox(height: 10),
-                CustomTextFormField(
-                  label: 'Body',
-                  initialValue: postToUpdate.body ?? '',
-                  onSaved: (value) => postToUpdate.body = value?.trim(),
-                ),
-                const SizedBox(height: 20),
-                isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          _buildButton(
-                              text: "Delete",
-                              onPressed: _deletePost,
-                              color: Colors.red),
-                          _buildButton(
-                            text: "Save",
-                            onPressed: _updatePost,
+            child: BlocConsumer<PostsCubit, PostsCubitStates>(
+              listener: (BuildContext context, PostsCubitStates state) {
+                if (state is PostUpdateSuccess) {}
+                if (state is PostUpdateError) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Error: ${state.errorMessage}"),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              },
+              builder: (context, state) {
+                if (state is PostUpdateLoading) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text('Fill The Form Below',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 16),
+                    CustomTextFormField(
+                      label: 'Title',
+                      initialValue: postToUpdate.title ?? '',
+                      onSaved: (value) => postToUpdate.title = value?.trim(),
+                      keyboardType: TextInputType.multiline,
+                    ),
+                    const SizedBox(height: 10),
+                    CustomTextFormField(
+                      label: 'Body',
+                      initialValue: postToUpdate.body ?? '',
+                      onSaved: (value) => postToUpdate.body = value?.trim(),
+                    ),
+                    const SizedBox(height: 20),
+                    state is PostUpdateLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              _buildButton(
+                                  text: "Delete",
+                                  onPressed: _deletePost,
+                                  color: Colors.red,
+                                  state: state),
+                              _buildButton(
+                                  text: "Save",
+                                  onPressed: _updatePost,
+                                  state: state),
+                            ],
                           ),
-                        ],
-                      ),
-              ],
+                  ],
+                );
+              },
             ),
           ),
         ),
